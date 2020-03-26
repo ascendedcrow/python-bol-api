@@ -163,6 +163,7 @@ class RetailerAPI(object):
         self.orders = OrderMethods(self)
         self.shipments = ShipmentMethods(self)
         self.invoices = InvoiceMethods(self)
+        self.offers = OfferMethods(self)
         self.process_status = ProcessStatusMethods(self)
         self.session = session or requests.Session()
         self.session.headers.update({"Accept": "application/json"})
