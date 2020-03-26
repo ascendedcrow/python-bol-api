@@ -10,6 +10,7 @@ from .models import (
     ProcessStatuses,
     Shipment,
     Shipments,
+    Offer,
 )
 
 __all__ = ["RetailerAPI"]
@@ -137,6 +138,13 @@ class InvoiceMethods(MethodGroup):
         )
         return InvoiceSpecification.parse(self.api, resp.text)
 
+class OfferMethods(MethodGroup):
+    def __init__(self, api):
+        super(OfferMethods, self).__init__(api, "offers")
+
+    def get(self, offer_id):
+        resp = self.request("GET", path=str(offer_id))
+        return Offer.parse(self.api, resp.text)
 
 class RetailerAPI(object):
     def __init__(

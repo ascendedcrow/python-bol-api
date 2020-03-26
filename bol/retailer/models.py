@@ -201,3 +201,8 @@ class InvoiceSpecification(ModelList):
     class Meta:
         item_type = InvoiceSpecificationItem
         items_key = "invoiceSpecification"
+
+
+class Offer(Model):
+    class Meta:
+        pass
