@@ -146,6 +146,13 @@ class OfferMethods(MethodGroup):
         resp = self.request("GET", path=str(offer_id))
         return Offer.parse(self.api, resp.text)
 
+    def update_price(self, offer_id, price):
+        payload = {"pricing":{"bundlePrices":[{"quantity":1, "price":price}]}}
+        resp = self.request(
+            "PUT", path="{}/price".format(offer_id), json=payload
+        )
+        return ProcessStatus.parse(self.api, resp.text)
+
 class RetailerAPI(object):
     def __init__(
         self,
