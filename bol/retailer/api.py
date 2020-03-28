@@ -115,6 +115,9 @@ class ProcessStatusMethods(MethodGroup):
         resp = self.request("GET", params=params)
         return ProcessStatuses.parse(self.api, resp.text)
 
+    def get_by_id(self, entity_id):
+        resp = self.request("GET",path='{}'.format(entity_id))
+        return ProcessStatuses.parse(self.api, resp.text)
 
 class InvoiceMethods(MethodGroup):
     def __init__(self, api):
@@ -147,11 +150,22 @@ class OfferMethods(MethodGroup):
         return Offer.parse(self.api, resp.text)
 
     def update_price(self, offer_id, price):
-        payload = {"pricing":{"bundlePrices":[{"quantity":1, "price":price}]}}
+        payload = {"pricing":{"bundlePrices":[{"quantity":1, "price":float(price)}]}}
         resp = self.request(
             "PUT", path="{}/price".format(offer_id), json=payload
         )
-        return ProcessStatus.parse(self.api, resp.text)
+        return Offer.parse(self.api, resp.text)
+
+    def generate_export_file(self):
+        payload = {"format":"CSV"}
+        resp = self.request("POST", path="export", json=payload)
+        return Offer.parse(self.api, resp.text)
+
+    def get_export_file(self, export_id):
+        # self.session.headers.update()
+        resp = self.request("GET", path = "export/{}".format(export_id))
+        return Offer.parse(self.api, resp.text)
+
 
 class RetailerAPI(object):
     def __init__(
@@ -188,6 +202,7 @@ class RetailerAPI(object):
         )
         resp.raise_for_status()
         token = resp.json()
+        print(token["access_token"])
         self.set_access_token(token["access_token"])
         return token
 
@@ -218,6 +233,10 @@ class RetailerAPI(object):
             request_kwargs["headers"].update({
                 "content-type": "application/vnd.retailer.v3+json"
             })
+
         resp = self.session.request(**request_kwargs)
         resp.raise_for_status()
         return resp
+
+    def set_csv_headers(self):
+        self.session.headers.update({"Accept": "application/vnd.retailer.v3+csv"})

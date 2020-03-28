@@ -61,7 +61,10 @@ class BaseModel(object):
         m = cls()
         if _is_str(content):
             m.raw_content = content
-            m.raw_data = parse_json(content)
+            try:
+                m.raw_data = parse_json(content)
+            except:
+                m.raw_data = content
         else:
             m.raw_content = None
             m.raw_data = content
@@ -72,9 +75,10 @@ class Model(BaseModel):
     @classmethod
     def parse(cls, api, content):
         m = super(Model, cls).parse(api, content)
-        for tag, v in m.raw_data.items():
-            field = getattr(m.Meta, tag, RawField())
-            setattr(m, tag, field.parse(api, v, m))
+        if hasattr(m.raw_data, 'items'):
+            for tag, v in m.raw_data.items():
+                field = getattr(m.Meta, tag, RawField())
+                setattr(m, tag, field.parse(api, v, m))
         return m
 
 
